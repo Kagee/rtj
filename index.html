@@ -5,6 +5,7 @@
 
 var ENDPOINT = 'scgi'
 var URL = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/' + ENDPOINT;
+
 function alertNoArgs(method) {
 	var request = new XmlRpcRequest(URL, method);
 	var response = request.send();
@@ -79,6 +80,7 @@ function listDownloads() {
 </script>
 </head>
 <body>
+<!-- https://code.google.com/p/pyroscope/wiki/RtXmlRpcReference -->
 <input type="button" onclick="alertNoArgs(this.value)" value="system.client_version" />
 <input type="button" onclick="alertNoArgs(this.value)" value="download_list" />
 <input type="button" onclick="listDownloads()" value="List downloads" />
