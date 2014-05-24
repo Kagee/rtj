@@ -1,0 +1,88 @@
+<html
+<head>
+<script type="text/javascript" src="mimic/source/mimic.js"></script>
+<script>
+
+var ENDPOINT = 'scgi'
+var URL = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/' + ENDPOINT;
+function alertNoArgs(method) {
+	var request = new XmlRpcRequest(URL, method);
+	var response = request.send();
+	prompt("Reposonse:", JSON.stringify(response.parseXML()));
+}
+
+function callNoArgs(method) {
+	var request = new XmlRpcRequest(URL, method);
+	var response = request.send();
+	return response.parseXML();
+}
+
+function callOneArg(method, param) {
+	var request = new XmlRpcRequest(URL, method);
+	request.addParam(param);
+	var response = request.send();
+	alert(response.parseXML());
+}
+
+function createTable(tableData, tableHeader) {
+// http://stackoverflow.com/a/15164958
+  var table = document.createElement('table')
+    , tableBody = document.createElement('tbody');
+
+  tableData.forEach(function(rowData) {
+    var row = document.createElement('tr');
+
+    rowData.forEach(function(cellData) {
+      var cell = document.createElement('td');
+      cell.appendChild(document.createTextNode(cellData));
+      row.appendChild(cell);
+    });
+
+    tableBody.appendChild(row);
+  });
+  table.appendChild(tableHeader);
+  table.appendChild(tableBody);
+  return table;
+}
+
+function createTableHeader(headers) {
+	var tableHeaders = document.createElement('thead');
+	var row = document.createElement('tr');
+	headers.forEach(function(header) {
+		var cell = document.createElement('td');
+		cell.appendChild(document.createTextNode(header));
+		row.appendChild(cell);
+	});
+	tableHeaders.appendChild(row);
+	return tableHeaders;
+}
+
+
+function listDownloads() {
+	var request = new XmlRpcRequest(URL, "d.multicall");
+	request.addParam("main"); // view main, all downloads
+	request.addParam("d.get_hash=");
+	request.addParam("d.get_name="); //
+	request.addParam("d.get_complete="); //
+	request.addParam("d.get_size_bytes=");
+	request.addParam("d.get_bytes_done=");
+	var response = request.send();
+	//prompt("Reposonse:", JSON.stringify(response.parseXML()));
+	var arr =response.parseXML();
+	var table = createTable(arr, createTableHeader(["Hash","Name","Complete","Size bytes", "Done bytes"]));
+	var tableview = document.getElementById("tableview");
+	while (tableview.firstChild) {
+	    tableview.removeChild(tableview.firstChild);
+	}
+	tableview.appendChild(table);
+}
+</script>
+</head>
+<body>
+<input type="button" onclick="alertNoArgs(this.value)" value="system.client_version" />
+<input type="button" onclick="alertNoArgs(this.value)" value="download_list" />
+<input type="button" onclick="listDownloads()" value="List downloads" />
+<input type="button" onclick="alertNoArgs(this.value)" value="view_list" />
+<div name="tableview" id="tableview"></div>
+</body>
+</html>
